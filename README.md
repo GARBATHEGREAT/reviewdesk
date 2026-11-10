@@ -179,7 +179,9 @@ npm run typecheck
 - **Render:** [`render.yaml`](render.yaml) is a blueprint: create a new Blueprint from this repository and it provisions the container, a PostgreSQL database and generated secrets.
 - **CI:** [`.github/workflows/ci.yml`](.github/workflows/ci.yml) type-checks, runs all tests against PostgreSQL, builds, then builds the Docker image and smoke-tests the running container.
 
-Status: the repository is deployment-ready; a public demo URL has not been set up yet.
+With `SEED_DEMO=true` (set in the blueprint) the app creates the demo accounts and demo project at start-up, so a public demo has data to explore. Remove that variable for a private deployment, where the first person to register becomes the administrator.
+
+Status: deployment-ready. See the repository description for the live demo link once it is published.
 
 Environment variables are listed in [`.env.example`](.env.example). `DATABASE_URL` and `JWT_SECRET` are required, and the server refuses to start if they are missing or weak.
 

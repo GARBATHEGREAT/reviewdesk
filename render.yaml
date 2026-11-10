@@ -16,6 +16,10 @@ services:
         generateValue: true
       - key: NODE_ENV
         value: production
+      # Public demo: creates admin@reviewdesk.dev, rita@ and ravi@ (password ReviewDesk2024) and a demo project.
+      # Remove this variable for a private deployment.
+      - key: SEED_DEMO
+        value: "true"
 
 databases:
   - name: reviewdesk-db

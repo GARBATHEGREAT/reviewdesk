@@ -53,6 +53,18 @@ describe('health and monitoring', () => {
   });
 });
 
+describe('demo data', () => {
+  it('can be created more than once without duplicates', async () => {
+    const { seedDemo } = await import('../src/db/demo.js');
+    await ctx.pool.query('TRUNCATE audit_log, reviews, tasks, projects, refresh_tokens, users RESTART IDENTITY CASCADE');
+    await seedDemo(ctx.pool, 4);
+    await seedDemo(ctx.pool, 4);
+    const users = await ctx.pool.query('SELECT count(*)::int AS n FROM users');
+    const tasks = await ctx.pool.query('SELECT count(*)::int AS n FROM tasks');
+    expect([users.rows[0].n, tasks.rows[0].n]).toEqual([3, 10]);
+  });
+});
+
 describe('migrations', () => {
   it('are idempotent: running them again applies nothing', async () => {
     expect(await migrate(ctx.pool)).toEqual([]);
