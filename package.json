@@ -1,0 +1,19 @@
+{
+  "name": "reviewdesk",
+  "version": "1.0.0",
+  "private": true,
+  "description": "ReviewDesk: a multi-reviewer workflow for rating AI output, with quality metrics",
+  "workspaces": ["api", "web"],
+  "scripts": {
+    "dev:db": "npm run dev:db -w api",
+    "dev:api": "npm run dev -w api",
+    "dev:web": "npm run dev -w web",
+    "build": "npm run build -w web && npm run build -w api",
+    "typecheck": "npm run typecheck -w api && npm run typecheck -w web",
+    "test": "npm run test -w api && npm run test -w web",
+    "migrate": "npm run migrate -w api",
+    "seed": "npm run seed -w api"
+  },
+  "engines": { "node": ">=20" },
+  "license": "MIT"
+}

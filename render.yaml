@@ -1,0 +1,22 @@
+# One-click deploy on Render: New > Blueprint > pick this repository.
+services:
+  - type: web
+    name: reviewdesk
+    runtime: docker
+    plan: free
+    healthCheckPath: /ready
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: reviewdesk-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: METRICS_TOKEN
+        generateValue: true
+      - key: NODE_ENV
+        value: production
+
+databases:
+  - name: reviewdesk-db
+    plan: free

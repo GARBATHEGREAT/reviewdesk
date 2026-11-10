@@ -1,0 +1,60 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: reviewdesk_test
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      TEST_DATABASE_URL: postgres://postgres:postgres@localhost:5432/reviewdesk_test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Type check
+        run: npm run typecheck
+      - name: API tests (unit and integration, real PostgreSQL)
+        run: npm test -w api
+      - name: Web tests
+        run: npm test -w web
+      - name: Build
+        run: npm run build
+
+  docker:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build the production image
+        run: docker build -t reviewdesk:ci .
+      - name: Smoke test the container
+        run: |
+          docker network create rd
+          docker run -d --name db --network rd -e POSTGRES_PASSWORD=pw -e POSTGRES_DB=rd postgres:16-alpine
+          for i in $(seq 1 30); do docker exec db pg_isready -U postgres && break; sleep 1; done
+          docker run -d --name app --network rd -p 4000:4000 \
+            -e DATABASE_URL=postgres://postgres:pw@db:5432/rd \
+            -e JWT_SECRET=ci-secret-ci-secret-ci-secret reviewdesk:ci
+          for i in $(seq 1 30); do curl -fs localhost:4000/ready && break; sleep 1; done
+          curl -fs localhost:4000/health
+          curl -fs localhost:4000/ | grep -q "ReviewDesk"
+          docker logs app

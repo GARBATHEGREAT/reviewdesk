@@ -1,0 +1,43 @@
+# Run the whole stack:  docker compose up --build
+# App:        http://localhost:4000
+# Monitoring: docker compose --profile monitoring up --build   (Prometheus on http://localhost:9090)
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: reviewdesk
+      POSTGRES_PASSWORD: reviewdesk
+      POSTGRES_DB: reviewdesk
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U reviewdesk"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  app:
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://reviewdesk:reviewdesk@db:5432/reviewdesk
+      JWT_SECRET: ${JWT_SECRET:-change-me-to-a-long-random-string}
+      NODE_ENV: production
+      METRICS_TOKEN: ${METRICS_TOKEN:-local-metrics-token}
+    ports:
+      - "4000:4000"
+
+  prometheus:
+    image: prom/prometheus:v2.55.1
+    profiles: ["monitoring"]
+    volumes:
+      - ./ops/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    ports:
+      - "9090:9090"
+    depends_on:
+      - app
+
+volumes:
+  dbdata:
