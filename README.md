@@ -5,6 +5,9 @@
 
 **Rate AI answers as a team, and measure whether your reviewers actually agree.**
 
+**Live demo: https://reviewdesk-theta.vercel.app**  
+Sign in with `admin@reviewdesk.dev` (full access), or `rita@reviewdesk.dev` / `ravi@reviewdesk.dev` (reviewers). Password for all three: `ReviewDesk2024`. It is a shared public demo, so other visitors may change the data. It runs on Vercel with a free Neon PostgreSQL database, so the first request after a quiet period can take a few seconds.
+
 ReviewDesk is a full-stack web application for teams that evaluate AI output (chatbot answers, generated code, summaries).
 Admins create projects and load tasks. Reviewers rate each answer independently. The app tells you how consistent the
 team is, using Cohen's kappa, so you can tell a good AI from a confusing rubric.
@@ -182,7 +185,7 @@ npm run typecheck
 
 With `SEED_DEMO=true` (set in the blueprint) the app creates the demo accounts and demo project at start-up, so a public demo has data to explore. Remove that variable for a private deployment, where the first person to register becomes the administrator.
 
-Status: deployment-ready. See the repository description for the live demo link once it is published.
+Status: **live** at https://reviewdesk-theta.vercel.app (Vercel + Neon free tier, with demo data from `SEED_DEMO=true`).
 
 Environment variables are listed in [`.env.example`](.env.example). `DATABASE_URL` and `JWT_SECRET` are required, and the server refuses to start if they are missing or weak.
 
