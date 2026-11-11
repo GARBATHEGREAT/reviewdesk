@@ -14,7 +14,14 @@ import { createPool } from './db/pool.js';
 let ready: Promise<Express> | undefined;
 
 async function start(): Promise<Express> {
-  const config = loadConfig({ ...process.env, NODE_ENV: 'production', DB_POOL_MAX: process.env.DB_POOL_MAX ?? '3' });
+  // Vercel's database integrations name the connection string differently; accept the common names.
+  const databaseUrl = process.env.DATABASE_URL ?? process.env.POSTGRES_URL ?? process.env.POSTGRES_PRISMA_URL;
+  const config = loadConfig({
+    ...process.env,
+    NODE_ENV: 'production',
+    DATABASE_URL: databaseUrl,
+    DB_POOL_MAX: process.env.DB_POOL_MAX ?? '3',
+  });
   const pool = createPool(config.DATABASE_URL, config.DB_POOL_MAX);
   await migrate(pool);
   if (config.SEED_DEMO === 'true') await seedDemo(pool, config.BCRYPT_ROUNDS);
