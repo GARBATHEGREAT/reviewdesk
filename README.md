@@ -140,7 +140,7 @@ All routes are under `/api`. Errors always look like `{"error": {"code": "...", 
 
 `users` ← `refresh_tokens`; `projects` → `tasks` → `reviews` (one review per reviewer per task, enforced by a unique constraint);
 `audit_log` records who did what. Rules such as allowed roles, rating range 1 to 5 and verdict values are enforced by
-**database constraints**, not only in code. Migrations live in [`api/migrations`](api/migrations), run in order at start-up,
+**database constraints**, not only in code. Migrations live in [`server/migrations`](server/migrations), run in order at start-up,
 and are guarded by a database lock so two instances cannot migrate at once.
 
 ## Security decisions
@@ -176,6 +176,7 @@ npm run typecheck
 ## Deployment
 
 - **Docker:** the [`Dockerfile`](Dockerfile) builds the API and web app, then runs a slim production image as a non-root user with a health check.
+- **Vercel:** [`vercel.json`](vercel.json) and [`api/index.mjs`](api/index.mjs) run the whole app on Vercel: the React app is served from the CDN and the Express API runs as one serverless function, with PostgreSQL from Neon. Set `DATABASE_URL`, `JWT_SECRET` and (for a public demo) `SEED_DEMO=true`; migrations run on the first request.
 - **Render:** [`render.yaml`](render.yaml) is a blueprint: create a new Blueprint from this repository and it provisions the container, a PostgreSQL database and generated secrets.
 - **CI:** [`.github/workflows/ci.yml`](.github/workflows/ci.yml) type-checks, runs all tests against PostgreSQL, builds, then builds the Docker image and smoke-tests the running container.
 
@@ -188,7 +189,7 @@ Environment variables are listed in [`.env.example`](.env.example). `DATABASE_UR
 ## Project structure
 
 ```
-api/
+server/
   migrations/        SQL schema changes, applied in order
   src/
     app.ts           Express app: middleware, routes, error handling

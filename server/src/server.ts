@@ -7,7 +7,7 @@ import { createLogger } from './logger.js';
 
 const config = loadConfig();
 const logger = createLogger(config);
-const pool = createPool(config.DATABASE_URL);
+const pool = createPool(config.DATABASE_URL, config.DB_POOL_MAX);
 
 // Apply pending migrations before accepting traffic.
 const applied = await migrate(pool);

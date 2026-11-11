@@ -13,6 +13,7 @@ const schema = z.object({
   AUTH_RATE_LIMIT: z.coerce.number().int().positive().default(30),
   METRICS_TOKEN: z.string().optional(),
   WEB_DIST: z.string().optional(),
+  DB_POOL_MAX: z.coerce.number().int().min(1).max(50).default(10),
   // 'true' creates the demo accounts and project at start-up (for a public demo). Off by default.
   SEED_DEMO: z.enum(['true', 'false']).default('false'),
 });

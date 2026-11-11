@@ -33,7 +33,7 @@ jobs:
       - name: Type check
         run: npm run typecheck
       - name: API tests (unit and integration, real PostgreSQL)
-        run: npm test -w api
+        run: npm test -w server
       - name: Web tests
         run: npm test -w web
       - name: Build

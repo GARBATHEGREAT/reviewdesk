@@ -2,8 +2,8 @@ import pg from 'pg';
 
 export type Db = pg.Pool | pg.PoolClient;
 
-export function createPool(connectionString: string): pg.Pool {
-  return new pg.Pool({ connectionString, max: 10, idleTimeoutMillis: 30_000 });
+export function createPool(connectionString: string, max = 10): pg.Pool {
+  return new pg.Pool({ connectionString, max, idleTimeoutMillis: 30_000 });
 }
 
 /** Run a function inside a transaction; rolls back on any error. */
